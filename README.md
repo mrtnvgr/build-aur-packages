@@ -1,5 +1,7 @@
 # `build-aur-packages`
 
+![test status](https://github.com/mrtnvgr/build-aur-packages/actions/workflows/test.yml/badge.svg)
+
 Github Action that builds AUR packages and provides the built packages as
 package repository in the github workspace.
 From there, other actions can use the package repository to install packages or upload the repository to some share or ...
