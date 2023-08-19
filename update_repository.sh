@@ -15,10 +15,8 @@ echo "AUR Packages requested to install: $INPUT_PACKAGES"
 echo "AUR Packages to fix missing dependencies: $INPUT_MISSING_AUR_DEPENDENCIES"
 echo "AUR Packages to install (including dependencies): $packages_with_aur_dependencies"
 
+echo "Name of pacman repository: $INPUT_REPONAME"
 echo "Keep existing packages: $INPUT_KEEP"
-
-# Sync repositories.
-pacman -Sy
 
 # Check for optional missing pacman dependencies to install.
 if [ -n "$INPUT_MISSING_PACMAN_DEPENDENCIES" ]
@@ -40,14 +38,31 @@ then
     fi
 fi
 
+# Create an empty repository file
+sudo --user builder \
+    repo-add \
+    /home/builder/workspace/$INPUT_REPONAME.db.tar.gz
+
+# Register the local repository with pacman.
+cat >> /etc/pacman.conf <<-EOF
+
+# local repository (required by aur tools to be set up)
+[$INPUT_REPONAME]
+SigLevel = Optional
+Server = file:///home/builder/workspace
+EOF
+
+# Sync repositories.
+pacman -Sy
+
 # Add the packages to the local repository.
 sudo --user builder \
     aur sync \
     --noconfirm --noview \
-    --database aurci2 --root /home/builder/workspace \
+    --database "$INPUT_REPONAME" --root /home/builder/workspace \
     $packages_with_aur_dependencies
 
-if [ "$INPUT_KEEP" == "true" ] && cmp --quiet /home/builder/workspace/aurci2.db $GITHUB_WORKSPACE/aurci2.db
+if [ "$INPUT_KEEP" == "true" ] && cmp --quiet /home/builder/workspace/$INPUT_REPONAME.db $GITHUB_WORKSPACE/$INPUT_REPONAME.db
 then
     echo "updated=false" >> $GITHUB_OUTPUT
     exit 0
@@ -64,9 +79,9 @@ then
     # make sure that the .db/.files files are in place
     # Note: Symlinks fail to upload, so copy those files
     cd $GITHUB_WORKSPACE
-    rm aurci2.db aurci2.files
-    cp aurci2.db.tar.gz aurci2.db
-    cp aurci2.files.tar.gz aurci2.files
+    rm $INPUT_REPONAME.db $INPUT_REPONAME.files
+    cp $INPUT_REPONAME.db.tar.gz $INPUT_REPONAME.db
+    cp $INPUT_REPONAME.files.tar.gz $INPUT_REPONAME.files
 else
     echo "No github workspace known (GITHUB_WORKSPACE is unset)."
 fi
