@@ -30,6 +30,12 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  updated:
+    description: |
+      A String ("true" or "false") to tell if anything has been updated and thus may need to be
+      uploaded. Always true if keep=false
+
 runs:
   using: "docker"
   image: "Dockerfile"

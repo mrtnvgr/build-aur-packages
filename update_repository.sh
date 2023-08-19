@@ -28,6 +28,14 @@ sudo --user builder \
     --database aurci2 --root /home/builder/workspace \
     $packages_with_aur_dependencies
 
+if [ "$INPUT_KEEP" == "true" ] && cmp --quiet /home/builder/workspace/aurci2.db $GITHUB_WORKSPACE/aurci2.db
+then
+    echo "updated=false" >> $GITHUB_OUTPUT
+    exit 0
+fi
+
+echo "updated=true" >> $GITHUB_OUTPUT
+
 # Move the local repository to the workspace.
 if [ -n "$GITHUB_WORKSPACE" ]
 then
