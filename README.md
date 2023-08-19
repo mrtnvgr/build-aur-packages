@@ -7,10 +7,9 @@ package repository in the github workspace.
 From there, other actions can use the package repository to install packages or upload the repository to some share or ...
 
 See
-[here for a real world example](https://github.com/kopp/aurci2).
+[here for a real world example](https://github.com/mrtnvgr/binaur).
 
 Usage:
-Use this in a job that allows to run dockers (e.g. linux machine) like this:
 
 ```yaml
 jobs:
@@ -18,17 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Build Packages
-      uses: kopp/build-aur-packages@v1
+      uses: mrtnvgr/build-aur-packages@main
       with:
-        packages: >
+        packages: |
           azure-cli
           kwallet-git
           micronucleus-git
-        missing_pacman_dependencies: >
+        missing_pacman_dependencies: |
           libusb-compat
 ```
 
-This example wil build packages
+This example will build packages
 
 ```
           azure-cli
