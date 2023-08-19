@@ -13,11 +13,13 @@ RUN \
     echo 'builder ALL = NOPASSWD: /usr/bin/pacman' > /etc/sudoers.d/builder_pacman && \
     echo 'builder ALL = NOPASSWD: /usr/sbin/pacsync' >> /etc/sudoers.d/builder_pacman
 
+# Init pacman keyring
+RUN pacman-key --init
+
 USER builder
 
 # Build aurutils as unprivileged user.
 RUN \
-    pacman-key --init && \
     cd /tmp/ && \
     curl --output aurutils.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/aurutils.tar.gz && \
     tar xf aurutils.tar.gz && \
