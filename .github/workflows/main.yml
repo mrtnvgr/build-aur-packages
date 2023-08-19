@@ -19,7 +19,7 @@ jobs:
     - name: Build Packages
       uses: ./  # Use action from the root of this repository
       with:
-        packages: >
+        packages: |
           go-do
 
     - name: List generated Files
