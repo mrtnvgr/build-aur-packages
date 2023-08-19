@@ -17,6 +17,7 @@ USER builder
 
 # Build aurutils as unprivileged user.
 RUN \
+    pacman-key --init && \
     cd /tmp/ && \
     curl --output aurutils.tar.gz https://aur.archlinux.org/cgit/aur.git/snapshot/aurutils.tar.gz && \
     tar xf aurutils.tar.gz && \
