@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# Fail if anything goes wrong.
+# Fail if anything goes wrong
 set -e
 
-# Print each line before executing if Github arction debug logging is enabled
+# Print each line before executing if debug logging is enabled
 if [ "$RUNNER_DEBUG" == "1" ] 
 then
     set -x
