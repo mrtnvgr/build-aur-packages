@@ -5,11 +5,13 @@ set -ex
 
 # Remove newlines from any input parameters
 INPUT_PACKAGES="${INPUT_PACKAGES//$'\n'/ }"
+INPUT_DEVEL_PACKAGES="${INPUT_DEVEL_PACKAGES//$'\n'/ }"
 INPUT_MISSING_AUR_DEPENDENCIES="${INPUT_MISSING_AUR_DEPENDENCIES//$'\n'/ }"
 INPUT_MISSING_PACMAN_DEPENDENCIES="${INPUT_MISSING_PACMAN_DEPENDENCIES//$'\n'/ }"
 
 # Get list of all packages with dependencies to install.
 echo "AUR Packages requested to install: $INPUT_PACKAGES"
+echo "AUR Packages requested to force-update: $INPUT_DEVEL_PACKAGES"
 echo "AUR Packages to fix missing dependencies: $INPUT_MISSING_AUR_DEPENDENCIES"
 
 packages_with_aur_dependencies="$(aur depends --pkgname $INPUT_PACKAGES $INPUT_MISSING_AUR_DEPENDENCIES)"
@@ -23,6 +25,18 @@ do
     fi
 done
 echo "AUR Packages to install (including dependencies): $packages_with_aur_dependencies"
+
+devel_packages_with_aur_dependencies="$(aur depends --pkgname $INPUT_DEVEL_PACKAGES)"
+devel_packages_with_aur_dependencies="${devel_packages_with_aur_dependencies//$'\n'/ }"
+for f in $INPUT_DEVEL_PACKAGES ;
+do
+    if [ "${devel_packages_with_aur_dependencies/*${f}*/FOUND}" != "FOUND" ]
+    then
+        echo "ERROR: Package $f not found."
+        exit 1
+    fi
+done
+echo "AUR Packages to force-update (including dependencies): $devel_packages_with_aur_dependencies"
 
 echo "Name of pacman repository: $INPUT_REPONAME"
 echo "Keep existing packages: $INPUT_KEEP"
@@ -74,6 +88,12 @@ sudo --user builder \
     --noconfirm --noview \
     --database "$INPUT_REPONAME" --root /home/builder/workspace \
     $packages_with_aur_dependencies
+
+sudo --user builder \
+    aur sync \
+    --noconfirm --noview --upgrades \
+    --database "$INPUT_REPONAME" --root /home/builder/workspace \
+    $devel_packages_with_aur_dependencies
 
 if [ "$INPUT_KEEP" == "true" ] && cmp --quiet /home/builder/workspace/$INPUT_REPONAME.db $GITHUB_WORKSPACE/$INPUT_REPONAME.db
 then

@@ -14,6 +14,13 @@ inputs:
       be built and included in the repository.
     required: true
 
+  devel_packages:
+    description: |
+      A string with a space separated list of aur packages that should
+      be rebuild regardless of `keep` value.
+    required: false
+    default: ""
+
   missing_pacman_dependencies:
     description: |
       A string with a space separated list of dependencies that are not
