@@ -12,7 +12,8 @@ inputs:
     description: |
       A string with a space separated list of aur packages that should
       be built and included in the repository.
-    required: true
+    required: false
+    default: ""
 
   devel_packages:
     description: |
