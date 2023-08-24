@@ -64,6 +64,10 @@ EOF
 # Sync repositories.
 pacman -Sy
 
+# Install unbuffer command (/dev/tty: No such device or address)
+# https://github.com/AladW/aurutils/commit/952a4e2fcc8f84e5fabc492c4775773ee5a6f1a0
+pacman --noconfirm -S expect
+
 # Add the packages to the local repository.
 sudo --user builder \
     aur sync \
