@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 
-# Fail if anything goes wrong
-set -e
-
-# Print each line before executing if debug logging is enabled
-if [ "$RUNNER_DEBUG" == "1" ] 
-then
-    set -x
-fi
+# Fail if anything goes wrong and print each line before executing
+set -ex
 
 # Remove newlines from any input parameters
 INPUT_PACKAGES="${INPUT_PACKAGES//$'\n'/ }"
